@@ -41,7 +41,7 @@ export interface HuntingFilters {
 export const MAPLELAND_JOBS = [
   "전사",
   "마법사",
-  "궁수", 
+  "궁수",
   "도적",
   "법사",
   "썬콜",
@@ -61,71 +61,78 @@ export const PLAY_STYLE_COLORS = {
 } as const;
 
 // 레벨 범위 파싱 함수
-export const parseLevelRange = (levelRange: string): { min: number; max: number } => {
+export const parseLevelRange = (
+  levelRange: string
+): { min: number; max: number } => {
   // "8–13" 형태
   const dashMatch = levelRange.match(/(\d+)[–-](\d+)/);
   if (dashMatch) {
     return {
       min: parseInt(dashMatch[1]),
-      max: parseInt(dashMatch[2])
+      max: parseInt(dashMatch[2]),
     };
   }
-  
+
   // "80+" 형태
   const plusMatch = levelRange.match(/(\d+)\+/);
   if (plusMatch) {
     const level = parseInt(plusMatch[1]);
     return {
       min: level,
-      max: level + 20 // +는 20레벨 범위로 가정
+      max: level + 20, // +는 20레벨 범위로 가정
     };
   }
-  
+
   // 단일 숫자
   const singleMatch = levelRange.match(/(\d+)/);
   if (singleMatch) {
     const level = parseInt(singleMatch[1]);
     return {
       min: level,
-      max: level + 5 // 기본 5레벨 범위
+      max: level + 5, // 기본 5레벨 범위
     };
   }
-  
+
   return { min: 1, max: 200 }; // 기본값
 };
 
 // 데이터 변환 함수
 export const transformHuntingData = (data: HuntingData): HuntingArea[] => {
   const result: HuntingArea[] = [];
-  
-  data.mapGuides.forEach(mapGuide => {
-    mapGuide.areas.forEach(area => {
+
+  data.mapGuides.forEach((mapGuide) => {
+    mapGuide.areas.forEach((area) => {
       const { min, max } = parseLevelRange(area.levelRange);
-      
+
       result.push({
         ...area,
         minLevel: min,
         maxLevel: max,
         mapName: mapGuide.mapName,
-        id: `${mapGuide.mapName}-${area.areaName}`.replace(/\s+/g, '-').toLowerCase()
+        id: `${mapGuide.mapName}-${area.areaName}`
+          .replace(/\s+/g, "-")
+          .toLowerCase(),
       });
     });
   });
-  
+
   return result;
 };
 
 // 필터링 함수
-export const filterHuntingAreas = (areas: HuntingArea[], filters: HuntingFilters): HuntingArea[] => {
-  return areas.filter(area => {
+export const filterHuntingAreas = (
+  areas: HuntingArea[],
+  filters: HuntingFilters
+): HuntingArea[] => {
+  return areas.filter((area) => {
     // 검색어 필터
     if (filters.searchTerm) {
       const searchLower = filters.searchTerm.toLowerCase();
-      const matchesSearch = 
+      const matchesSearch =
         area.areaName.toLowerCase().includes(searchLower) ||
         area.mapName.toLowerCase().includes(searchLower) ||
-        area.notes.some(note => note.toLowerCase().includes(searchLower));
-      
+        area.notes.some((note) => note.toLowerCase().includes(searchLower));
+
       if (!matchesSearch) return false;
     }
 
@@ -139,11 +146,11 @@ export const filterHuntingAreas = (areas: HuntingArea[], filters: HuntingFilters
 
     // 직업 필터
     if (filters.selectedJob) {
-      const jobMatch = 
+      const jobMatch =
         area.recommendedFor.includes(filters.selectedJob) ||
         area.recommendedFor.includes("all jobs") ||
-        area.recommendedFor.some(job => job.includes("all jobs"));
-      
+        area.recommendedFor.some((job) => job.includes("all jobs"));
+
       if (!jobMatch) return false;
     }
 
@@ -169,11 +176,15 @@ export const filterHuntingAreas = (areas: HuntingArea[], filters: HuntingFilters
           if (!area.playStyle.includes("party")) return false;
           break;
         case "farming":
-          if (!area.notes.some(note => 
-            note.includes("파밍") || 
-            note.includes("돈벌이") || 
-            note.includes("드랍")
-          )) return false;
+          if (
+            !area.notes.some(
+              (note) =>
+                note.includes("파밍") ||
+                note.includes("돈벌이") ||
+                note.includes("드랍")
+            )
+          )
+            return false;
           break;
       }
     }
@@ -183,9 +194,12 @@ export const filterHuntingAreas = (areas: HuntingArea[], filters: HuntingFilters
 };
 
 // 레벨 기반 추천 함수
-export const getRecommendationsForLevel = (areas: HuntingArea[], level: number): HuntingArea[] => {
+export const getRecommendationsForLevel = (
+  areas: HuntingArea[],
+  level: number
+): HuntingArea[] => {
   return areas
-    .filter(area => level >= area.minLevel && level <= area.maxLevel)
+    .filter((area) => level >= area.minLevel && level <= area.maxLevel)
     .sort((a, b) => {
       // 레벨 중심점과의 거리로 정렬
       const aCenter = (a.minLevel + a.maxLevel) / 2;
@@ -197,25 +211,30 @@ export const getRecommendationsForLevel = (areas: HuntingArea[], level: number):
 
 // 통계 계산 함수
 export const calculateStatistics = (areas: HuntingArea[]) => {
-  const byPlayStyle = areas.reduce((acc, area) => {
-    area.playStyle.forEach(style => {
-      acc[style] = (acc[style] || 0) + 1;
-    });
-    return acc;
-  }, {} as Record<string, number>);
+  const byPlayStyle = areas.reduce(
+    (acc, area) => {
+      area.playStyle.forEach((style) => {
+        acc[style] = (acc[style] || 0) + 1;
+      });
+      return acc;
+    },
+    {} as Record<string, number>
+  );
 
   const levelRanges = {
-    beginner: areas.filter(area => area.maxLevel <= 30).length,
-    intermediate: areas.filter(area => area.minLevel > 30 && area.maxLevel <= 70).length,
-    advanced: areas.filter(area => area.minLevel > 70).length
+    beginner: areas.filter((area) => area.maxLevel <= 30).length,
+    intermediate: areas.filter(
+      (area) => area.minLevel > 30 && area.maxLevel <= 70
+    ).length,
+    advanced: areas.filter((area) => area.minLevel > 70).length,
   };
 
-  const maps = Array.from(new Set(areas.map(area => area.mapName)));
+  const maps = Array.from(new Set(areas.map((area) => area.mapName)));
 
   return {
     total: areas.length,
     byPlayStyle,
     levelRanges,
-    maps: maps.length
+    maps: maps.length,
   };
 };

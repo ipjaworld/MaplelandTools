@@ -5,10 +5,10 @@ import type {
   HuntingData,
   HuntingArea,
   HuntingFilters,
-//   transformHuntingData,
-//   filterHuntingAreas,
-//   getRecommendationsForLevel,
-//   calculateStatistics,
+  //   transformHuntingData,
+  //   filterHuntingAreas,
+  //   getRecommendationsForLevel,
+  //   calculateStatistics,
 } from "@/types/huntingTypes";
 import {
   transformHuntingData as transform,

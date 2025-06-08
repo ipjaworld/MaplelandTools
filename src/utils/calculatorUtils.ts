@@ -1,6 +1,9 @@
 // src/utils/calculatorUtils.ts
-import type { CalculationResult, CostStatistics } from '../types/calculator';
-import { DEFAULT_VALUES, CONFIDENCE_LEVELS } from '../constants/calculatorConstants';
+import type { CalculationResult, CostStatistics } from "../types/calculator";
+import {
+  DEFAULT_VALUES,
+  CONFIDENCE_LEVELS,
+} from "../constants/calculatorConstants";
 
 /**
  * 메소 표시 포맷팅
@@ -9,7 +12,7 @@ export const formatMeso = (amount: number): string => {
   if (amount >= 100000000) {
     return `${(amount / 100000000).toFixed(1)}억`;
   } else if (amount >= 10000) {
-    return `${(amount / 10000).toFixed(0)}만`;  
+    return `${(amount / 10000).toFixed(0)}만`;
   } else {
     return amount.toLocaleString();
   }
@@ -35,7 +38,10 @@ export const calculateBinomial = (n: number, k: number, p: number): number => {
 /**
  * N회 이상 성공 확률 계산
  */
-export const calculateNOrMoreSuccess = (results: CalculationResult[], n: number): number => {
+export const calculateNOrMoreSuccess = (
+  results: CalculationResult[],
+  n: number
+): number => {
   if (n <= 0) return 1;
   if (n > results.length - 1) return 0;
 
@@ -61,7 +67,10 @@ export const calculateTrialsForTarget = (
 
   // 이진 탐색으로 필요한 시행 횟수 찾기
   let left = targetSuccesses;
-  let right = Math.min(DEFAULT_VALUES.MAX_TRIALS, Math.max(100, targetSuccesses * 20));
+  let right = Math.min(
+    DEFAULT_VALUES.MAX_TRIALS,
+    Math.max(100, targetSuccesses * 20)
+  );
   let iterations = 0;
 
   while (left < right && iterations < DEFAULT_VALUES.MAX_ITERATIONS) {

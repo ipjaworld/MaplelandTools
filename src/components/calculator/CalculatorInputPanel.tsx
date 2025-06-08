@@ -14,7 +14,7 @@ import {
   handleNumberKeyDown,
   handleNumberPaste,
   formatNumberForDisplay,
-  type NumberInputOptions
+  type NumberInputOptions,
 } from "@/utils/numberInputUtils";
 
 interface CalculatorInputPanelProps {
@@ -35,94 +35,101 @@ const CalculatorInputPanel: React.FC<CalculatorInputPanelProps> = ({
 }) => {
   // 각 입력 필드의 문자열 상태 관리 (초기값에 천 단위 구분자 적용)
   const [displayValues, setDisplayValues] = useState({
-    probability: formatNumberForDisplay(inputs.localProbability, { decimals: 2 }),
-    targetSuccess: formatNumberForDisplay(inputs.targetSuccess, { decimals: 0 }),
+    probability: formatNumberForDisplay(inputs.localProbability, {
+      decimals: 2,
+    }),
+    targetSuccess: formatNumberForDisplay(inputs.targetSuccess, {
+      decimals: 0,
+    }),
     minSuccess: formatNumberForDisplay(inputs.minSuccessCount, { decimals: 0 }),
     scrollPrice: formatNumberForDisplay(inputs.scrollPrice, { decimals: 0 }),
     trials: formatNumberForDisplay(inputs.localTrials, { decimals: 0 }),
   });
 
   // 숫자 입력 핸들러 생성
-  const createNumberInputHandler = useCallback((
-    key: keyof typeof displayValues,
-    inputKey: keyof CalculatorInputs,
-    options: NumberInputOptions = {}
-  ) => {
-    return {
-      value: displayValues[key],
-      onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
-        const rawValue = e.target.value;
-        const validatedValue = validateAndFormatNumber(rawValue, options);
-        
-        setDisplayValues(prev => ({
-          ...prev,
-          [key]: validatedValue
-        }));
-        
-        // 숫자로 변환해서 부모 컴포넌트에 전달
-        const numericValue = parseNumberInput(validatedValue, 0, options);
-        onInputChange(inputKey, numericValue as any);
-      },
-      onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => {
-        handleNumberKeyDown(e, options);
-      },
-      onPaste: (e: React.ClipboardEvent<HTMLInputElement>) => {
-        handleNumberPaste(e, options);
-      },
-      onBlur: (e: React.FocusEvent<HTMLInputElement>) => {
-        // 포커스를 잃을 때 값 정리
-        const numericValue = parseNumberInput(e.target.value, 0, options);
-        const formattedValue = formatNumberForDisplay(numericValue, options);
-        
-        setDisplayValues(prev => ({
-          ...prev,
-          [key]: formattedValue
-        }));
-        
-        onInputChange(inputKey, numericValue as any);
-      }
-    };
-  }, [displayValues, onInputChange]);
+  const createNumberInputHandler = useCallback(
+    (
+      key: keyof typeof displayValues,
+      inputKey: keyof CalculatorInputs,
+      options: NumberInputOptions = {}
+    ) => {
+      return {
+        value: displayValues[key],
+        onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+          const rawValue = e.target.value;
+          const validatedValue = validateAndFormatNumber(rawValue, options);
+
+          setDisplayValues((prev) => ({
+            ...prev,
+            [key]: validatedValue,
+          }));
+
+          // 숫자로 변환해서 부모 컴포넌트에 전달
+          const numericValue = parseNumberInput(validatedValue, 0, options);
+          onInputChange(inputKey, numericValue as any);
+        },
+        onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => {
+          handleNumberKeyDown(e, options);
+        },
+        onPaste: (e: React.ClipboardEvent<HTMLInputElement>) => {
+          handleNumberPaste(e, options);
+        },
+        onBlur: (e: React.FocusEvent<HTMLInputElement>) => {
+          // 포커스를 잃을 때 값 정리
+          const numericValue = parseNumberInput(e.target.value, 0, options);
+          const formattedValue = formatNumberForDisplay(numericValue, options);
+
+          setDisplayValues((prev) => ({
+            ...prev,
+            [key]: formattedValue,
+          }));
+
+          onInputChange(inputKey, numericValue as any);
+        },
+      };
+    },
+    [displayValues, onInputChange]
+  );
 
   const setPresetProbability = (prob: number) => {
     const probStr = formatNumberForDisplay(prob, { decimals: 2 });
-    setDisplayValues(prev => ({
+    setDisplayValues((prev) => ({
       ...prev,
-      probability: probStr
+      probability: probStr,
     }));
     onInputChange("localProbability", prob);
   };
 
   // 각 입력 필드의 핸들러
   const probabilityHandler = createNumberInputHandler(
-    'probability', 
-    'localProbability', 
+    "probability",
+    "localProbability",
     { min: 0.01, max: 100, decimals: 2 }
   );
 
   const targetSuccessHandler = createNumberInputHandler(
-    'targetSuccess', 
-    'targetSuccess', 
+    "targetSuccess",
+    "targetSuccess",
     { min: 1, max: 100, decimals: 0 }
   );
 
   const minSuccessHandler = createNumberInputHandler(
-    'minSuccess', 
-    'minSuccessCount', 
+    "minSuccess",
+    "minSuccessCount",
     { min: 1, max: 100, decimals: 0 }
   );
 
   const scrollPriceHandler = createNumberInputHandler(
-    'scrollPrice', 
-    'scrollPrice', 
+    "scrollPrice",
+    "scrollPrice",
     { min: 1, decimals: 0 }
   );
 
-  const trialsHandler = createNumberInputHandler(
-    'trials', 
-    'localTrials', 
-    { min: 1, max: 1000, decimals: 0 }
-  );
+  const trialsHandler = createNumberInputHandler("trials", "localTrials", {
+    min: 1,
+    max: 1000,
+    decimals: 0,
+  });
 
   return (
     <Card className="bg-slate-800/40 border-slate-700/50 backdrop-blur-sm">

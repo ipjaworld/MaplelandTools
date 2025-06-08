@@ -1,20 +1,21 @@
 // src/pages/Calculator.tsx
-import React, { useState } from 'react';
-import { useCalculator } from '../contexts/CalculatorContext';
-import { Calculator as CalcIcon } from 'lucide-react';
-import CalculatorInputPanel from '@/components/calculator/CalculatorInputPanel';
-import CalculatorResultPanel from '@/components/calculator/CalculatorResultPanel';
-import type { CalculatorInputs, CalculationMode } from '../types/calculator';
-import { DEFAULT_VALUES } from '../constants/calculatorConstants';
+import React, { useState } from "react";
+import { useCalculator } from "../contexts/CalculatorContext";
+import { Calculator as CalcIcon } from "lucide-react";
+import CalculatorInputPanel from "@/components/calculator/CalculatorInputPanel";
+import CalculatorResultPanel from "@/components/calculator/CalculatorResultPanel";
+import type { CalculatorInputs, CalculationMode } from "../types/calculator";
+import { DEFAULT_VALUES } from "../constants/calculatorConstants";
 import {
   generateCalculationResults,
   calculateTargetCostStatistics,
   calculateNOrMoreSuccess,
-} from '../utils/calculatorUtils';
+} from "../utils/calculatorUtils";
 
 const Calculator: React.FC = () => {
-  const { state, setProbability, setTrials, setResults, addToHistory } = useCalculator();
-  
+  const { state, setProbability, setTrials, setResults, addToHistory } =
+    useCalculator();
+
   // 입력 상태들을 하나의 객체로 관리
   const [inputs, setInputs] = useState<CalculatorInputs>({
     localProbability: DEFAULT_VALUES.PROBABILITY,
@@ -22,7 +23,7 @@ const Calculator: React.FC = () => {
     scrollPrice: DEFAULT_VALUES.SCROLL_PRICE,
     targetSuccess: DEFAULT_VALUES.TARGET_SUCCESS,
     minSuccessCount: DEFAULT_VALUES.MIN_SUCCESS_COUNT,
-    calculationMode: 'target' as CalculationMode,
+    calculationMode: "target" as CalculationMode,
   });
 
   // 입력값 변경 핸들러
@@ -30,7 +31,7 @@ const Calculator: React.FC = () => {
     key: K,
     value: CalculatorInputs[K]
   ) => {
-    setInputs(prev => ({ ...prev, [key]: value }));
+    setInputs((prev) => ({ ...prev, [key]: value }));
   };
 
   // 계산 실행
@@ -60,14 +61,14 @@ const Calculator: React.FC = () => {
       scrollPrice: DEFAULT_VALUES.SCROLL_PRICE,
       targetSuccess: DEFAULT_VALUES.TARGET_SUCCESS,
       minSuccessCount: DEFAULT_VALUES.MIN_SUCCESS_COUNT,
-      calculationMode: 'target',
+      calculationMode: "target",
     });
     setResults([]);
   };
 
   // 계산된 값들
   const costStats =
-    state.results.length > 0 && inputs.calculationMode === 'target'
+    state.results.length > 0 && inputs.calculationMode === "target"
       ? calculateTargetCostStatistics(
           inputs.scrollPrice,
           state.probability,
@@ -79,7 +80,7 @@ const Calculator: React.FC = () => {
     state.results.length > 0
       ? calculateNOrMoreSuccess(
           state.results,
-          inputs.calculationMode === 'target' ? 1 : inputs.minSuccessCount
+          inputs.calculationMode === "target" ? 1 : inputs.minSuccessCount
         )
       : 0;
 
@@ -94,7 +95,8 @@ const Calculator: React.FC = () => {
           </h1>
         </div>
         <p className="text-slate-400 text-lg mb-4">
-          메이플랜드 주문서, 가챠 아이템의 목표 달성 확률과 예상 비용을 정확히 계산해보세요
+          메이플랜드 주문서, 가챠 아이템의 목표 달성 확률과 예상 비용을 정확히
+          계산해보세요
         </p>
       </div>
 

@@ -470,10 +470,10 @@ const HuntingGrounds: React.FC = () => {
                                   {style === "solo"
                                     ? "솔로"
                                     : style === "party"
-                                    ? "파티"
-                                    : style === "support"
-                                    ? "서포트"
-                                    : style}
+                                      ? "파티"
+                                      : style === "support"
+                                        ? "서포트"
+                                        : style}
                                 </span>
                               </div>
                             </Badge>
@@ -536,8 +536,8 @@ const HuntingGrounds: React.FC = () => {
                             isOptimal
                               ? "bg-green-500/10 border-green-500/20"
                               : isInRange
-                              ? "bg-blue-500/10 border-blue-500/20"
-                              : "bg-red-500/10 border-red-500/20"
+                                ? "bg-blue-500/10 border-blue-500/20"
+                                : "bg-red-500/10 border-red-500/20"
                           }`}
                         >
                           <div className="flex items-center space-x-2 text-xs">
@@ -546,8 +546,8 @@ const HuntingGrounds: React.FC = () => {
                                 isOptimal
                                   ? "text-green-400"
                                   : isInRange
-                                  ? "text-blue-400"
-                                  : "text-red-400"
+                                    ? "text-blue-400"
+                                    : "text-red-400"
                               }`}
                             />
                             <span
@@ -555,15 +555,15 @@ const HuntingGrounds: React.FC = () => {
                                 isOptimal
                                   ? "text-green-300"
                                   : isInRange
-                                  ? "text-blue-300"
-                                  : "text-red-300"
+                                    ? "text-blue-300"
+                                    : "text-red-300"
                               }`}
                             >
                               {isOptimal
                                 ? "최적 레벨 매치"
                                 : isInRange
-                                ? "레벨 적합"
-                                : "레벨 부적합"}
+                                  ? "레벨 적합"
+                                  : "레벨 부적합"}
                             </span>
                           </div>
                         </div>

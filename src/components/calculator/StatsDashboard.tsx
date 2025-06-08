@@ -1,24 +1,24 @@
 // components/calculator/StatsDashboard.tsx
-import React, { useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Target, 
-  TrendingUp, 
-  BarChart3, 
-  Zap, 
+import React, { useMemo } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Target,
+  TrendingUp,
+  BarChart3,
+  Zap,
   Calculator,
   Percent,
   Timer,
-  Award
-} from 'lucide-react';
-import type { CalculationResult } from '../../types/calculator';
-import { 
-  calculateExpectedValue, 
-  calculateVariance, 
+  Award,
+} from "lucide-react";
+import type { CalculationResult } from "../../types/calculator";
+import {
+  calculateExpectedValue,
+  calculateVariance,
   calculateStandardDeviation,
-  calculateGeometricExpectedValue 
-} from '../../utils/probability';
+  calculateGeometricExpectedValue,
+} from "../../utils/probability";
 
 interface StatsDashboardProps {
   results: CalculationResult[];
@@ -27,9 +27,14 @@ interface StatsDashboardProps {
 }
 
 // 간단한 프로그레스 바 컴포넌트
-const ProgressBar: React.FC<{ value: number; className?: string }> = ({ value, className = '' }) => (
-  <div className={`w-full bg-slate-700 rounded-full h-2 overflow-hidden ${className}`}>
-    <div 
+const ProgressBar: React.FC<{ value: number; className?: string }> = ({
+  value,
+  className = "",
+}) => (
+  <div
+    className={`w-full bg-slate-700 rounded-full h-2 overflow-hidden ${className}`}
+  >
+    <div
       className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-500 ease-out"
       style={{ width: `${Math.min(Math.max(value, 0), 100)}%` }}
     />
@@ -39,7 +44,7 @@ const ProgressBar: React.FC<{ value: number; className?: string }> = ({ value, c
 const StatsDashboard: React.FC<StatsDashboardProps> = ({
   results,
   probability,
-  trials
+  trials,
 }) => {
   const statistics = useMemo(() => {
     if (results.length === 0) return null;
@@ -47,9 +52,9 @@ const StatsDashboard: React.FC<StatsDashboardProps> = ({
     const expectedValue = calculateExpectedValue(trials, probability);
     const variance = calculateVariance(trials, probability);
     const standardDeviation = calculateStandardDeviation(trials, probability);
-    
+
     // 최빈값 (가장 높은 확률을 가진 성공 횟수)
-    const mode = results.reduce((max, current) => 
+    const mode = results.reduce((max, current) =>
       current.probability > max.probability ? current : max
     ).successCount;
 
@@ -61,7 +66,7 @@ const StatsDashboard: React.FC<StatsDashboardProps> = ({
 
     // 기댓값 이상 성공할 확률
     const aboveExpected = results
-      .filter(r => r.successCount >= expectedValue)
+      .filter((r) => r.successCount >= expectedValue)
       .reduce((sum, r) => sum + r.probability, 0);
 
     // 첫 번째 성공까지의 기댓값 (기하분포)
@@ -70,12 +75,21 @@ const StatsDashboard: React.FC<StatsDashboardProps> = ({
     // 성공률 구간별 분석
     const successRanges = {
       none: results[0].probability,
-      low: results.filter(r => r.successCount > 0 && r.successCount < expectedValue * 0.5)
+      low: results
+        .filter(
+          (r) => r.successCount > 0 && r.successCount < expectedValue * 0.5
+        )
         .reduce((sum, r) => sum + r.probability, 0),
-      medium: results.filter(r => r.successCount >= expectedValue * 0.5 && r.successCount < expectedValue * 1.5)
+      medium: results
+        .filter(
+          (r) =>
+            r.successCount >= expectedValue * 0.5 &&
+            r.successCount < expectedValue * 1.5
+        )
         .reduce((sum, r) => sum + r.probability, 0),
-      high: results.filter(r => r.successCount >= expectedValue * 1.5)
-        .reduce((sum, r) => sum + r.probability, 0)
+      high: results
+        .filter((r) => r.successCount >= expectedValue * 1.5)
+        .reduce((sum, r) => sum + r.probability, 0),
     };
 
     return {
@@ -87,7 +101,7 @@ const StatsDashboard: React.FC<StatsDashboardProps> = ({
       atLeastOneSuccess,
       aboveExpected,
       firstSuccessExpected,
-      successRanges
+      successRanges,
     };
   }, [results, probability, trials]);
 
@@ -202,7 +216,8 @@ const StatsDashboard: React.FC<StatsDashboardProps> = ({
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-slate-300 font-medium">
-                보통 성공 ({Math.floor(statistics.expectedValue * 0.5)}~{Math.floor(statistics.expectedValue * 1.5)}회)
+                보통 성공 ({Math.floor(statistics.expectedValue * 0.5)}~
+                {Math.floor(statistics.expectedValue * 1.5)}회)
               </span>
               <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
                 {(statistics.successRanges.medium * 100).toFixed(1)}%
