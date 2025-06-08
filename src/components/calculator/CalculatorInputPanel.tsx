@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,14 @@ import { Play, RotateCcw, Target } from "lucide-react";
 import type { CalculatorInputs } from "@/types/calculator";
 import { MAPLELAND_SCROLLS, GACHA_PRESETS } from "@/types/calculator";
 import { formatMeso } from "@/utils/calculatorUtils";
+import {
+  validateAndFormatNumber,
+  parseNumberInput,
+  handleNumberKeyDown,
+  handleNumberPaste,
+  formatNumberForDisplay,
+  type NumberInputOptions
+} from "@/utils/numberInputUtils";
 
 interface CalculatorInputPanelProps {
   inputs: CalculatorInputs;
@@ -25,16 +33,103 @@ const CalculatorInputPanel: React.FC<CalculatorInputPanelProps> = ({
   onCalculate,
   onReset,
 }) => {
+  // 각 입력 필드의 문자열 상태 관리 (초기값에 천 단위 구분자 적용)
+  const [displayValues, setDisplayValues] = useState({
+    probability: formatNumberForDisplay(inputs.localProbability, { decimals: 2 }),
+    targetSuccess: formatNumberForDisplay(inputs.targetSuccess, { decimals: 0 }),
+    minSuccess: formatNumberForDisplay(inputs.minSuccessCount, { decimals: 0 }),
+    scrollPrice: formatNumberForDisplay(inputs.scrollPrice, { decimals: 0 }),
+    trials: formatNumberForDisplay(inputs.localTrials, { decimals: 0 }),
+  });
+
+  // 숫자 입력 핸들러 생성
+  const createNumberInputHandler = useCallback((
+    key: keyof typeof displayValues,
+    inputKey: keyof CalculatorInputs,
+    options: NumberInputOptions = {}
+  ) => {
+    return {
+      value: displayValues[key],
+      onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+        const rawValue = e.target.value;
+        const validatedValue = validateAndFormatNumber(rawValue, options);
+        
+        setDisplayValues(prev => ({
+          ...prev,
+          [key]: validatedValue
+        }));
+        
+        // 숫자로 변환해서 부모 컴포넌트에 전달
+        const numericValue = parseNumberInput(validatedValue, 0, options);
+        onInputChange(inputKey, numericValue as any);
+      },
+      onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => {
+        handleNumberKeyDown(e, options);
+      },
+      onPaste: (e: React.ClipboardEvent<HTMLInputElement>) => {
+        handleNumberPaste(e, options);
+      },
+      onBlur: (e: React.FocusEvent<HTMLInputElement>) => {
+        // 포커스를 잃을 때 값 정리
+        const numericValue = parseNumberInput(e.target.value, 0, options);
+        const formattedValue = formatNumberForDisplay(numericValue, options);
+        
+        setDisplayValues(prev => ({
+          ...prev,
+          [key]: formattedValue
+        }));
+        
+        onInputChange(inputKey, numericValue as any);
+      }
+    };
+  }, [displayValues, onInputChange]);
+
   const setPresetProbability = (prob: number) => {
+    const probStr = formatNumberForDisplay(prob, { decimals: 2 });
+    setDisplayValues(prev => ({
+      ...prev,
+      probability: probStr
+    }));
     onInputChange("localProbability", prob);
   };
+
+  // 각 입력 필드의 핸들러
+  const probabilityHandler = createNumberInputHandler(
+    'probability', 
+    'localProbability', 
+    { min: 0.01, max: 100, decimals: 2 }
+  );
+
+  const targetSuccessHandler = createNumberInputHandler(
+    'targetSuccess', 
+    'targetSuccess', 
+    { min: 1, max: 100, decimals: 0 }
+  );
+
+  const minSuccessHandler = createNumberInputHandler(
+    'minSuccess', 
+    'minSuccessCount', 
+    { min: 1, max: 100, decimals: 0 }
+  );
+
+  const scrollPriceHandler = createNumberInputHandler(
+    'scrollPrice', 
+    'scrollPrice', 
+    { min: 1, decimals: 0 }
+  );
+
+  const trialsHandler = createNumberInputHandler(
+    'trials', 
+    'localTrials', 
+    { min: 1, max: 1000, decimals: 0 }
+  );
 
   return (
     <Card className="bg-slate-800/40 border-slate-700/50 backdrop-blur-sm">
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center space-x-2 text-slate-200">
           <div className="flex justify-between items-center w-full">
-            <div className="flex">
+            <div className="flex gap-1 md:gap-2">
               <Target className="w-5 h-5 text-blue-400" />
               <span>계산 설정</span>
             </div>
@@ -123,16 +218,11 @@ const CalculatorInputPanel: React.FC<CalculatorInputPanelProps> = ({
           </Label>
           <Input
             id="probability"
-            type="number"
-            min="0.01"
-            max="100"
-            step="0.01"
-            value={inputs.localProbability}
-            onChange={(e) =>
-              onInputChange("localProbability", Number(e.target.value))
-            }
+            type="text"
+            inputMode="decimal"
             placeholder="10"
             className="bg-slate-900/50 border-slate-600/50 text-slate-200 text-lg h-12 focus:border-blue-500/50 focus:ring-blue-500/20"
+            {...probabilityHandler}
           />
 
           {/* 메이플랜드 프리셋 */}
@@ -187,15 +277,11 @@ const CalculatorInputPanel: React.FC<CalculatorInputPanelProps> = ({
           </Label>
           <Input
             id="target"
-            type="number"
-            min="1"
-            max="100"
-            value={inputs.targetSuccess}
-            onChange={(e) =>
-              onInputChange("targetSuccess", Number(e.target.value))
-            }
+            type="text"
+            inputMode="numeric"
             placeholder="1"
             className="bg-slate-900/50 border-slate-600/50 text-slate-200 text-lg h-12 focus:border-blue-500/50 focus:ring-blue-500/20"
+            {...targetSuccessHandler}
           />
           <p className="text-xs text-slate-500">
             몇 번 성공하는 것이 목표인지 설정하세요
@@ -211,15 +297,11 @@ const CalculatorInputPanel: React.FC<CalculatorInputPanelProps> = ({
           </Label>
           <Input
             id="minSuccess"
-            type="number"
-            min="1"
-            max="100"
-            value={inputs.minSuccessCount}
-            onChange={(e) =>
-              onInputChange("minSuccessCount", Number(e.target.value))
-            }
+            type="text"
+            inputMode="numeric"
             placeholder="1"
             className="bg-slate-900/50 border-slate-600/50 text-slate-200 text-lg h-12 focus:border-blue-500/50 focus:ring-blue-500/20"
+            {...minSuccessHandler}
           />
           <p className="text-xs text-slate-500">
             최소 몇 번 이상 성공할 확률을 볼지 설정하세요
@@ -233,14 +315,11 @@ const CalculatorInputPanel: React.FC<CalculatorInputPanelProps> = ({
           </Label>
           <Input
             id="price"
-            type="number"
-            min="1"
-            value={inputs.scrollPrice}
-            onChange={(e) =>
-              onInputChange("scrollPrice", Number(e.target.value))
-            }
+            type="text"
+            inputMode="numeric"
             placeholder="1000000"
             className="bg-slate-900/50 border-slate-600/50 text-slate-200 text-lg h-12 focus:border-blue-500/50 focus:ring-blue-500/20"
+            {...scrollPriceHandler}
           />
           <p className="text-xs text-slate-500">
             현재 설정: {formatMeso(inputs.scrollPrice)} 메소
@@ -256,15 +335,11 @@ const CalculatorInputPanel: React.FC<CalculatorInputPanelProps> = ({
           </Label>
           <Input
             id="trials"
-            type="number"
-            min="1"
-            max="1000"
-            value={inputs.localTrials}
-            onChange={(e) =>
-              onInputChange("localTrials", Number(e.target.value))
-            }
+            type="text"
+            inputMode="numeric"
             placeholder="100"
             className="bg-slate-900/50 border-slate-600/50 text-slate-200 text-lg h-12 focus:border-blue-500/50 focus:ring-blue-500/20"
+            {...trialsHandler}
           />
         </div>
 
