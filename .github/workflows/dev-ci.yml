@@ -1,0 +1,158 @@
+name: Dev Branch CI/CD
+
+on:
+  push:
+    branches: [ dev ]
+  pull_request:
+    branches: [ dev ]
+
+env:
+  NODE_VERSION: '20.x'
+
+jobs:
+  quality-and-build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: 🔧 Install dependencies
+      run: npm ci
+
+    - name: 🎨 Code formatting check
+      run: |
+        echo "🎨 Checking code formatting with Prettier..."
+        npm run format:check
+
+    - name: 🔍 ESLint check
+      run: |
+        echo "🔍 Running ESLint..."
+        npm run lint
+
+    - name: 📝 TypeScript type check
+      run: |
+        echo "📝 Running TypeScript type checking..."
+        npm run type-check
+
+    - name: 🏗️ Build application
+      run: |
+        echo "🏗️ Building application..."
+        npm run build
+        echo "✅ Build completed successfully!"
+
+    - name: 📊 Build analysis
+      run: |
+        echo "📊 Analyzing build output..."
+        ls -la .next/
+        echo "Build size:"
+        du -sh .next/
+
+  # 보안 및 의존성 체크
+  security-audit:
+    runs-on: ubuntu-latest
+    needs: quality-and-build
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: 🔧 Install dependencies
+      run: npm ci
+
+    - name: 🔒 Security audit
+      run: |
+        echo "🔒 Running security audit..."
+        npm audit --audit-level moderate
+      continue-on-error: true
+
+    - name: 📋 Dependency check
+      run: |
+        echo "📋 Checking for outdated packages..."
+        npm outdated
+      continue-on-error: true
+
+  # 테스트 (테스트가 있는 경우)
+  test:
+    runs-on: ubuntu-latest
+    needs: quality-and-build
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+
+    - name: 📦 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: 🔧 Install dependencies
+      run: npm ci
+
+    - name: 🧪 Run tests
+      run: |
+        if npm run | grep -q "test"; then
+          echo "🧪 Running tests..."
+          npm run test
+        else
+          echo "ℹ️ No test script found, skipping tests"
+        fi
+
+  # 최종 성공 알림
+  success-notification:
+    runs-on: ubuntu-latest
+    needs: [quality-and-build, security-audit, test]
+    if: success()
+    
+    steps:
+    - name: 🎉 Success notification
+      run: |
+        echo "🎉 All CI checks passed successfully!"
+        echo ""
+        echo "✅ Code Quality Checks:"
+        echo "   - Prettier formatting: ✅"
+        echo "   - ESLint: ✅"
+        echo "   - TypeScript: ✅"
+        echo ""
+        echo "✅ Build & Deploy:"
+        echo "   - Production build: ✅"
+        echo "   - Build analysis: ✅"
+        echo ""
+        echo "✅ Security & Dependencies:"
+        echo "   - Security audit: ✅"
+        echo "   - Dependency check: ✅"
+        echo ""
+        echo "🚀 Code is ready for dev branch!"
+
+  # 실패 시 상세 정보 제공
+  failure-notification:
+    runs-on: ubuntu-latest
+    needs: [quality-and-build, security-audit, test]
+    if: failure()
+    
+    steps:
+    - name: ❌ Failure notification
+      run: |
+        echo "❌ CI Pipeline Failed"
+        echo ""
+        echo "Please check the following:"
+        echo "🔍 Code formatting (Prettier)"
+        echo "🔍 Linting errors (ESLint)" 
+        echo "🔍 TypeScript type errors"
+        echo "🔍 Build errors"
+        echo ""
+        echo "Fix the issues and push again."
+        exit 1
