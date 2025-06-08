@@ -1,17 +1,14 @@
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Menu, X } from 'lucide-react';
-import ComingSoonModal from '@/components/common/ComingSoonModal';
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Menu, X } from "lucide-react";
+import ComingSoonModal from "@/components/common/ComingSoonModal";
 
 interface HeaderProps {
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ 
-  sidebarOpen, 
-  setSidebarOpen
-}) => {
+const Header: React.FC<HeaderProps> = ({ sidebarOpen, setSidebarOpen }) => {
   const [showSettingsModal, setShowSettingsModal] = useState(false);
 
   return (
@@ -25,9 +22,9 @@ const Header: React.FC<HeaderProps> = ({
               variant="ghost"
               size="sm"
               className={`transition-all duration-200 h-10 w-10 p-0 rounded-lg flex-shrink-0 ${
-                sidebarOpen 
-                  ? 'bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 hover:text-blue-200' 
-                  : 'text-slate-300 hover:text-slate-100 hover:bg-slate-700/60'
+                sidebarOpen
+                  ? "bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 hover:text-blue-200"
+                  : "text-slate-300 hover:text-slate-100 hover:bg-slate-700/60"
               }`}
               onClick={() => setSidebarOpen(!sidebarOpen)}
             >
@@ -37,13 +34,13 @@ const Header: React.FC<HeaderProps> = ({
                 <Menu className="h-5 w-5" />
               )}
             </Button>
-            
+
             {/* Logo - 모바일 퍼스트 반응형 */}
             <div className="flex items-center space-x-2 md:gap-4 md:space-x-3">
               <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg flex-shrink-0">
                 <span className="text-white font-bold text-sm">M</span>
               </div>
-              <div className='flex flex-col md:flex-row md:items-end gap-1 md:gap-3'>
+              <div className="flex flex-col md:flex-row md:items-end gap-1 md:gap-3">
                 <h1 className="text-[24px] font-bold text-slate-200">
                   메랜도구
                 </h1>
@@ -52,7 +49,8 @@ const Header: React.FC<HeaderProps> = ({
                   메이플랜드 편의 도구
                 </p>
                 <p className="hidden lg:block text-sm text-slate-400 leading-tight">
-                  주문서 확률 계산, 사냥터 추천 등 자주 나오는 질문, 자주 계산해보는 내용을 편리하게
+                  주문서 확률 계산, 사냥터 추천 등 자주 나오는 질문, 자주
+                  계산해보는 내용을 편리하게
                 </p>
               </div>
             </div>
@@ -60,8 +58,8 @@ const Header: React.FC<HeaderProps> = ({
 
           {/* Right side - 모바일 퍼스트 */}
           <div className="flex items-center space-x-2">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               onClick={() => setShowSettingsModal(true)}
               className="bg-slate-700/40 border-slate-600/50 text-slate-300 hover:bg-slate-600/60 hover:text-slate-100 hover:border-slate-500/60 transition-all duration-200 text-xs md:text-sm px-2 md:px-3"
@@ -74,10 +72,10 @@ const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* 드로어 상태 표시 바 */}
-        <div 
+        <div
           className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-300 ${
-            sidebarOpen ? 'w-full opacity-100' : 'w-0 opacity-0'
-          }`} 
+            sidebarOpen ? "w-full opacity-100" : "w-0 opacity-0"
+          }`}
         />
       </header>
 

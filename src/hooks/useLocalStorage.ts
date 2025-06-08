@@ -169,7 +169,7 @@ export function useUserSettings() {
 export function usePersistedHistory() {
   const [history, setHistory, removeHistory] = useLocalStorage<HistoryItem[]>(
     "calculation-history",
-    []                                 
+    []
   );
 
   const addToHistory = useCallback(

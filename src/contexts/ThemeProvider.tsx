@@ -1,6 +1,6 @@
 // src > contexts > ThemeProvider.tsx
 import React, { useEffect, useState } from "react";
-import { ThemeContext } from './theme';
+import { ThemeContext } from "./theme";
 import type { Theme, ThemeContextType } from "../types/theme";
 
 interface ThemeProviderProps {

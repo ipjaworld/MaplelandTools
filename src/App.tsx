@@ -1,14 +1,19 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
-import Layout from './layouts/Layout';
-import Calculator from './pages/Calculator';
-import History from './pages/History';
-import About from './pages/About';
-import MainPage from './pages/MainPage';
-import HuntingGrounds from './pages/HuntingGrounds';
-import { ThemeProvider } from './contexts/ThemeProvider';
-import { CalculatorProvider } from './contexts/CalculatorContext';
-import './styles/globals.css';
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useNavigate,
+} from "react-router-dom";
+import Layout from "./layouts/Layout";
+import Calculator from "./pages/Calculator";
+import History from "./pages/History";
+import About from "./pages/About";
+import MainPage from "./pages/MainPage";
+import HuntingGrounds from "./pages/HuntingGrounds";
+import { ThemeProvider } from "./contexts/ThemeProvider";
+import { CalculatorProvider } from "./contexts/CalculatorContext";
+import "./styles/globals.css";
 
 // Navigation wrapper for MainPage
 const MainPageWrapper: React.FC = () => {

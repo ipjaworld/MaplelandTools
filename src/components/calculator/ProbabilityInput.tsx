@@ -133,8 +133,8 @@ const ProbabilityChart: React.FC<ProbabilityChartProps> = ({
                           data.isExpectedValue
                             ? "bg-gradient-to-r from-green-500 to-green-400"
                             : index === 0
-                            ? "bg-gradient-to-r from-blue-500 to-blue-400"
-                            : "bg-gradient-to-r from-slate-600 to-slate-500"
+                              ? "bg-gradient-to-r from-blue-500 to-blue-400"
+                              : "bg-gradient-to-r from-slate-600 to-slate-500"
                         }
                       `}
                       style={{ width: `${data.heightPercentage}%` }}

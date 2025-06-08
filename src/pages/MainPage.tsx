@@ -42,8 +42,8 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
         comingSoon
           ? "bg-slate-800/40 border-slate-700/50 opacity-60 cursor-not-allowed"
           : isOptimized
-          ? "bg-slate-800/40 border-2 border-cyan-400/30 shadow-lg shadow-cyan-400/10 hover:border-cyan-400/60 hover:shadow-cyan-400/25"
-          : "bg-slate-800/40 border-2 border-orange-400/30 shadow-lg shadow-orange-400/10 hover:border-orange-400/60 hover:shadow-orange-400/25"
+            ? "bg-slate-800/40 border-2 border-cyan-400/30 shadow-lg shadow-cyan-400/10 hover:border-cyan-400/60 hover:shadow-cyan-400/25"
+            : "bg-slate-800/40 border-2 border-orange-400/30 shadow-lg shadow-orange-400/10 hover:border-orange-400/60 hover:shadow-orange-400/25"
       } backdrop-blur-sm overflow-hidden`}
       onClick={handleClick}
     >
@@ -53,8 +53,8 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
           comingSoon
             ? ""
             : isOptimized
-            ? "bg-gradient-to-br from-cyan-400/5 to-blue-400/5"
-            : "bg-gradient-to-br from-orange-400/5 to-red-400/5"
+              ? "bg-gradient-to-br from-cyan-400/5 to-blue-400/5"
+              : "bg-gradient-to-br from-orange-400/5 to-red-400/5"
         }`}
       />
 
